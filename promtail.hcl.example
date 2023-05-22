@@ -1,0 +1,147 @@
+job "promtail" {
+  datacenters = ["xxx"]
+  namespace = "xxx"
+  type = "system"
+
+  group "promtail" {
+    network {
+      port "http" {
+        to = 9080
+        static = 9080
+      }
+    }
+
+    restart {
+      attempts = 3
+      delay    = "20s"
+      mode     = "delay"
+    }
+
+    task "prepare-volumes" {
+      driver = "docker"
+
+      lifecycle {
+        hook = "prestart"
+      }
+
+      config {
+        image = "bash:latest"
+        args = ["-c", "chmod 777 /volumes/*"]
+        volumes = [
+          "/srv/docker/mgm/promtail/allocs:/volumes/allocs",
+          "/srv/docker/mgm/promtail/data:/volumes/data",
+        ]
+
+        auth {
+          server_address = "docker.io"
+        }
+      }
+      resources {
+        cpu    = 50
+        memory = 50
+      }
+    }
+
+    task "nomad-promtail-helper" {
+      driver = "docker"
+      env {
+        NOMAD_TOKEN = "xxx"
+        NOMAD_NODE_NAME = node.unique.name
+        ALLOC_DIR = "/allocs"
+        DEBUG = "true"
+      }
+      config {
+        force_pull = true
+        image = "f4k3lol/nomad-promtail-helper:latest"
+        auth {
+          server_address = "docker.io"
+        }
+        mounts = [
+          { type = "bind", source = "/srv/docker/mgm/promtail/allocs", target = "/allocs", readonly = false },
+        ]
+      }
+      resources {
+        cpu    = 100
+        memory = 100
+      }
+    }
+
+    task "promtail" {
+      driver = "docker"
+
+      logs {
+        max_files     = 3
+        max_file_size = 5
+      }
+
+      env {
+        HOSTNAME = "${attr.unique.hostname}"
+      }
+
+      template {
+        data          = <<EOH
+positions:
+  filename: /data/positions.yaml
+
+server:
+  http_listen_port: 9080
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs
+  - job_name: nomad_job_logs
+    file_sd_configs:
+      - refresh_interval: 5s
+       files:
+          - '/allocs/*.json'
+EOH
+        destination   = "/local/promtail.yml"
+        change_mode = "restart"
+      }
+
+      config {
+        image = "grafana/promtail:2.8.2"
+        auth {
+          server_address = "docker.io"
+        }
+
+        ports = ["http"]
+        args = [
+          "-config.file=/local/promtail.yml"
+        ]
+        mounts = [
+          { type = "bind", source = "/srv/docker/mgm/promtail/allocs", target = "/allocs", readonly = true },
+          { type = "bind", source = "/srv/docker/mgm/promtail/data", target = "/data", readonly = false },
+          { type = "bind", source = "/var/lib/nomad/alloc", target = "/nomad", readonly = true },
+          { type = "bind", source = "/var/log/journal", target = "/journal", readonly = true },
+          { type = "bind", source = "/var/run/docker.sock", target = "/var/run/docker.sock", readonly = true },
+        ]
+      }
+
+      service {
+        name = "promtail"
+        port = "http"
+        tags = ["monitoring"]
+
+        check {
+          name     = "Promtail HTTP"
+          type     = "http"
+          path     = "/targets"
+          interval = "5s"
+          timeout  = "2s"
+
+          check_restart {
+            limit           = 2
+            grace           = "60s"
+            ignore_warnings = false
+          }
+        }
+      }
+      resources {
+        cpu    = 200
+        memory = 200
+      }
+    }
+  }
+}
