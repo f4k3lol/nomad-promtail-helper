@@ -48,7 +48,7 @@ job "promtail" {
         NOMAD_TOKEN = "xxx"
         NOMAD_NODE_NAME = node.unique.name
         ALLOC_DIR = "/allocs"
-        DEBUG = "true"
+        #DEBUG = "true"
       }
       config {
         force_pull = true
@@ -92,7 +92,7 @@ clients:
 scrape_configs
   - job_name: nomad_job_logs
     file_sd_configs:
-      - refresh_interval: 5s
+      - refresh_interval: 15s
        files:
           - '/allocs/*.json'
 EOH

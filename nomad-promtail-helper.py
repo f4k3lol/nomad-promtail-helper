@@ -8,10 +8,10 @@ alloc_dir = os.environ['ALLOC_DIR']
 promtail_alloc_dir = os.environ['PROMTAIL_ALLOC_DIR']
 refresh_period = int(os.environ['REFRESH_PERIOD'])
 debug = bool(os.environ['DEBUG'])
-
+namespace_label = os.environ['NAMESPACE_LABEL']
+job_label = os.environ['JOB_LABEL']
 
 def sync_alloc_dir():
-    jobs = n.jobs.get_jobs()
     namespaces = n.namespaces.get_namespaces()
     alloc_files = []
     for ns in namespaces:
@@ -24,8 +24,6 @@ def sync_alloc_dir():
                 filename = f"{alloc_id}.json"
                 create_file_config(alloc_id, ns_name, job_name)
                 alloc_files.append(filename)
-                dir_files = os.listdir(alloc_dir)
-    #print(alloc_files)
     dir_files = os.listdir(alloc_dir)
     for dir_file in dir_files:
         if dir_file not in alloc_files:
@@ -42,9 +40,9 @@ def create_file_config(id, namespace, job_name):
     {{
         "targets": [ "localhost" ],
         "labels": {{
-            "__path__": "/nomad/{id}/alloc/logs/*std*.{{?,??}}",
-            "nomad_namespace": "{namespace}",
-            "nomad_job_name": "{job_name}"
+            "__path__": "{promtail_alloc_dir}/{id}/alloc/logs/*std*.{{?,??}}",
+            "{namespace_label}": "{namespace}",
+            "{job_label}": "{job_name}"
         }}
     }}
 ]''')
