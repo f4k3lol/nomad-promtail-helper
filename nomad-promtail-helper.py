@@ -7,7 +7,7 @@ node_name = os.environ['NOMAD_NODE_NAME']
 alloc_dir = os.environ['ALLOC_DIR']
 promtail_alloc_dir = os.environ['PROMTAIL_ALLOC_DIR']
 refresh_period = int(os.environ['REFRESH_PERIOD'])
-debug = bool(os.environ['DEBUG'])
+debug = eval(os.environ['DEBUG'])
 namespace_label = os.environ['NAMESPACE_LABEL']
 job_label = os.environ['JOB_LABEL']
 

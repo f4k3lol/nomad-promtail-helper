@@ -9,6 +9,6 @@ ENV PROMTAIL_ALLOC_DIR=/nomad
 ENV REFRESH_PERIOD=15
 ENV NAMESPACE_LABEL=nomad_namespace
 ENV JOB_LABEL=nomad_job
-ENV DEBUG=false
+ENV DEBUG=False
 COPY nomad-promtail-helper.py /nomad-promtail-helper.py
 CMD python /nomad-promtail-helper.py

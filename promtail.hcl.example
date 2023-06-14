@@ -95,6 +95,15 @@ scrape_configs
       - refresh_interval: 15s
        files:
           - '/allocs/*.json'
+    pipeline_stages:
+      - match:
+          selector: '{scrape_job="nomad_log"}'
+          stages:
+            - regex:
+                source: filename
+                expression: '.*/(?P<nomad_task>.+?)\.std.*'
+            - labels:
+                nomad_task:
 EOH
         destination   = "/local/promtail.yml"
         change_mode = "restart"
