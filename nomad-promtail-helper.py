@@ -41,7 +41,8 @@ def create_file_config(id, namespace, job_name):
     {{
         "targets": [ "localhost" ],
         "labels": {{
-            "__path__": "{promtail_alloc_dir}/{id}/alloc/logs/*std*.{{?,??}}",
+            "__path__": "{promtail_alloc_dir}/{id}/alloc/logs/*",
+            "__path_exclude__": "{promtail_alloc_dir}/{id}/alloc/logs/*fifo",
             "{namespace_label}": "{namespace}",
             "{job_label}": "{job_name}",
             "{node_label}": "{node_name}"

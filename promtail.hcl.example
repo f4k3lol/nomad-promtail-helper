@@ -95,6 +95,13 @@ scrape_configs
       - refresh_interval: 15s
        files:
           - '/allocs/*.json'
+    relabel_configs:
+      - target_label: scrape_job
+        replacement: nomad_log
+      - target_label: nomad_alloc_id
+        source_labels: [__meta_filepath]
+        regex: '.*/(.+)\.json'
+        replacement: $1
     pipeline_stages:
       - match:
           selector: '{scrape_job="nomad_log"}'
