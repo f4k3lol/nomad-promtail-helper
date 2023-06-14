@@ -10,6 +10,7 @@ refresh_period = int(os.environ['REFRESH_PERIOD'])
 debug = eval(os.environ['DEBUG'])
 namespace_label = os.environ['NAMESPACE_LABEL']
 job_label = os.environ['JOB_LABEL']
+node_label = os.environ['NODE_LABEL']
 
 def sync_alloc_dir():
     namespaces = n.namespaces.get_namespaces()
@@ -42,7 +43,8 @@ def create_file_config(id, namespace, job_name):
         "labels": {{
             "__path__": "{promtail_alloc_dir}/{id}/alloc/logs/*std*.{{?,??}}",
             "{namespace_label}": "{namespace}",
-            "{job_label}": "{job_name}"
+            "{job_label}": "{job_name}",
+            "{node_label}": "{node_name}"
         }}
     }}
 ]''')
