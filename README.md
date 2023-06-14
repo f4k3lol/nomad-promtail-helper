@@ -15,3 +15,6 @@ e.g. `396fd2f1-a7b7-c3ce-1b59-33170a29584d.json`
     }
 ]
 ```
+
+### Dockerhub
+https://hub.docker.com/r/f4k3lol/nomad-promtail-helper
