@@ -28,7 +28,7 @@ e.g. `6498fe7a-f237-bda5-5918-a1e710e2b108.json`
 | --- | --- | --- |
 | NOMAD_ADDR | http://172.17.0.1:4646 | Nomad address. Used by nomad lib |
 | NOMAD_TOKEN | "" | Nomad token. You must pass it to job (see job example) |
-| NOMAD_NODE_NAME | "" | Nomad node name. Script uses this env to create files for allocations only on specific node he runs on |
+| NOMAD_NODE_NAME | "" | Nomad node name. Script uses this env to create files for allocations only on specific node he runs on. Passed by job (see job example) |
 | ALLOC_DIR | /allocs | Dir where alloc files for file_sd_configs should be created |
 | PROMTAIL_ALLOC_DIR | /nomad | Specifies where promtail should find nomad alloc files (Used in generating alloc files for file_sd_configs) |
 | REFRESH_PERIOD | 15 | Timeout between generating alloc files for file_sd_configs |
