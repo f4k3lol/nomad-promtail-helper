@@ -3,6 +3,11 @@
 ### Dockerhub
 https://hub.docker.com/r/f4k3lol/nomad-promtail-helper
 
+### Why
+1. Promtail doesn't have `nomad_sd_configs`.
+2. Using `docker_sd_configs` you cant parse raw driver logs, and you cant parse logs if container crashed instantly.
+3. Using `consul_sd_configs` you have to create service for every task, even if task doesn't need service and any connection to it.
+
 ### Description
 Creates json files for file_sd_configs
 
