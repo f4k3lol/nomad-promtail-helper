@@ -48,7 +48,8 @@ def create_file_config(id, namespace, job_name):
             "{node_label}": "{node_name}"
         }}
     }}
-]''')
+]
+''')
 
 if __name__ == "__main__":
     if not os.path.exists(alloc_dir):
